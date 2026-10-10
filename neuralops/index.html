@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeuralOps | AI Automation That Runs Your Business</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #030712;
+            --surface: #0f172a;
+            --surface-light: #1e293b;
+            --border: #1e293b;
+            --text: #f8fafc;
+            --text-dim: #94a3b8;
+            --text-muted: #64748b;
+            --purple: #8b5cf6;
+            --purple-glow: rgba(139, 92, 246, 0.25);
+            --cyan: #06b6d4;
+            --cyan-glow: rgba(6, 182, 212, 0.25);
+            --green: #10b981;
+            --gradient: linear-gradient(135deg, #8b5cf6, #06b6d4);
+            --gradient-2: linear-gradient(135deg, #06b6d4, #10b981);
+            --radius: 16px;
+            --radius-sm: 10px;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Ambient background */
+        .ambient {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .ambient-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(150px);
+            opacity: 0.12;
+        }
+
+        .ambient-orb-1 {
+            width: 600px;
+            height: 600px;
+            background: var(--purple);
+            top: -200px;
+            right: -100px;
+            animation: float 12s ease-in-out infinite;
+        }
+
+        .ambient-orb-2 {
+            width: 500px;
+            height: 500px;
+            background: var(--cyan);
+            bottom: -200px;
+            left: -100px;
+            animation: float 15s ease-in-out infinite reverse;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0); }
+            33% { transform: translate(40px, -30px); }
+            66% { transform: translate(-30px, 20px); }
+        }
+
+        /* Grid lines */
+        .grid-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(139, 92, 246, 0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(139, 92, 246, 0.04) 1px, transparent 1px);
+            background-size: 60px 60px;
+            pointer-events: none;
+            z-index: 0;
+            mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%);
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* NAV */
+        nav {
+            padding: 1.2rem 0;
+            position: sticky;
+            top: 0;
+            background: rgba(3, 7, 18, 0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            z-index: 100;
+        }
+
+        .nav-inner {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-weight: 800;
+            font-size: 1.3rem;
+            letter-spacing: -0.5px;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-badge {
+            background: var(--surface-light);
+            border: 1px solid var(--border);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            color: var(--text-dim);
+        }
+
+        .nav-badge .live-dot {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            background: var(--green);
+            border-radius: 50%;
+            margin-right: 0.4rem;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.5); }
+            50% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+        }
+
+        /* HERO */
+        .hero {
+            padding: 5rem 0 3rem;
+            text-align: center;
+        }
+
+        .hero-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1.2rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 50px;
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            margin-bottom: 2rem;
+        }
+
+        .hero-chip .chip-icon {
+            font-size: 1.1rem;
+        }
+
+        .hero h1 {
+            font-size: 3.8rem;
+            font-weight: 800;
+            line-height: 1.1;
+            letter-spacing: -2px;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero h1 .gradient-text {
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--text-dim);
+            max-width: 550px;
+            margin: 0 auto 2.5rem;
+            line-height: 1.8;
+        }
+
+        .hero-cta {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 1rem 2.2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            border: none;
+        }
+
+        .btn-primary {
+            background: var(--gradient);
+            color: white;
+            box-shadow: 0 4px 30px var(--purple-glow);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 50px var(--purple-glow);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--text-dim);
+            background: var(--surface);
+        }
+
+        /* STATS */
+        .stats-row {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            margin-top: 3rem;
+            flex-wrap: wrap;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+        }
+
+        .stat-number.gradient {
+            background: var(--gradient-2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* PROBLEM */
+        .section {
+            padding: 5rem 0;
+        }
+
+        .section-badge {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--purple);
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            margin-bottom: 1rem;
+        }
+
+        .pain-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.2rem;
+            margin-top: 2.5rem;
+        }
+
+        .pain-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.8rem;
+            transition: all 0.3s ease;
+        }
+
+        .pain-card:hover {
+            border-color: #334155;
+            transform: translateY(-3px);
+        }
+
+        .pain-card .emoji {
+            font-size: 2rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .pain-card h4 {
+            font-weight: 700;
+            font-size: 1rem;
+            margin-bottom: 0.4rem;
+        }
+
+        .pain-card p {
+            color: var(--text-dim);
+            font-size: 0.88rem;
+            line-height: 1.6;
+        }
+
+        /* OFFER BOX */
+        .offer-box {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 3rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .offer-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--gradient);
+        }
+
+        .offer-box::after {
+            content: '';
+            position: absolute;
+            top: -100px;
+            right: -100px;
+            width: 350px;
+            height: 350px;
+            background: radial-gradient(circle, var(--purple-glow), transparent 70%);
+            pointer-events: none;
+        }
+
+        .offer-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .offer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .offer-header h3 {
+            font-size: 2rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+        }
+
+        .price-block {
+            text-align: right;
+        }
+
+        .price-old {
+            text-decoration: line-through;
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+        .price-new {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .price-note {
+            color: var(--text-dim);
+            font-size: 0.8rem;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.8rem;
+            margin-bottom: 2rem;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.6rem;
+            color: var(--text-dim);
+            font-size: 0.92rem;
+        }
+
+        .feature-check {
+            color: var(--green);
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        /* PROCESS */
+        .process-cards {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin-top: 2.5rem;
+        }
+
+        .process-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.8rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .process-card:hover {
+            border-color: var(--purple);
+            box-shadow: 0 0 30px var(--purple-glow);
+        }
+
+        .process-num {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--surface-light);
+            border: 2px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 1.1rem;
+            margin: 0 auto 1rem;
+        }
+
+        .process-card h4 {
+            font-weight: 700;
+            font-size: 0.95rem;
+            margin-bottom: 0.4rem;
+        }
+
+        .process-card p {
+            color: var(--text-dim);
+            font-size: 0.82rem;
+            line-height: 1.6;
+        }
+
+        /* ROI CALCULATOR */
+        .roi-box {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 2.5rem;
+            text-align: center;
+            margin: 3rem 0;
+        }
+
+        .roi-box h4 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .roi-numbers {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .roi-item {
+            text-align: center;
+        }
+
+        .roi-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--green);
+        }
+
+        .roi-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        /* FAQ */
+        .faq-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .faq-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .faq-card:hover {
+            border-color: #334155;
+        }
+
+        .faq-card h4 {
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-bottom: 0.4rem;
+        }
+
+        .faq-card p {
+            color: var(--text-dim);
+            font-size: 0.85rem;
+            line-height: 1.6;
+        }
+
+        /* CTA */
+        .cta-final {
+            text-align: center;
+            padding: 5rem 0;
+        }
+
+        .cta-final h2 {
+            font-size: 3rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            margin-bottom: 1rem;
+        }
+
+        .cta-final p {
+            color: var(--text-dim);
+            max-width: 450px;
+            margin: 0 auto 2rem;
+            font-size: 1.05rem;
+        }
+
+        .urgency-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            padding: 0.6rem 1.2rem;
+            border-radius: 50px;
+            color: var(--green);
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-top: 1.5rem;
+        }
+
+        /* FOOTER */
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 2rem 0;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.3rem; }
+            .section-title { font-size: 1.8rem; }
+            .pain-grid,
+            .process-cards,
+            .faq-grid,
+            .feature-grid { grid-template-columns: 1fr; }
+            .offer-box { padding: 1.5rem; }
+            .stats-row { gap: 1.5rem; }
+            .offer-header { flex-direction: column; }
+            .price-block { text-align: left; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="ambient">
+        <div class="ambient-orb ambient-orb-1"></div>
+        <div class="ambient-orb ambient-orb-2"></div>
+    </div>
+    <div class="grid-overlay"></div>
+
+    <!-- NAV -->
+    <nav>
+        <div class="nav-inner">
+            <div class="logo">NeuralOps</div>
+            <div class="nav-badge">
+                <span class="live-dot"></span> 2 Spots Left This Month
+            </div>
+        </div>
+    </nav>
+
+    <!-- HERO -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-chip">
+                <span class="chip-icon">🤖</span> AI-Powered Automation Agency
+            </div>
+            <h1>
+                We Build <span class="gradient-text">AI Agents</span> That<br>
+                Run Your Business 24/7
+            </h1>
+            <p>
+                Custom AI chatbots, automated email flows, and lead qualification systems. 
+                Your business works while you sleep. Setup in 5 days.
+            </p>
+            <div class="hero-cta">
+                <a href="#offer" class="btn btn-primary">
+                    Get Your AI System →
+                </a>
+                <a href="#how" class="btn btn-outline">
+                    See How It Works
+                </a>
+            </div>
+            <div class="stats-row">
+                <div class="stat">
+                    <div class="stat-number gradient">150+</div>
+                    <div class="stat-label">AI Systems Deployed</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number gradient">24/7</div>
+                    <div class="stat-label">Always Working</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number gradient">5 Days</div>
+                    <div class="stat-label">Average Setup</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number gradient">40%</div>
+                    <div class="stat-label">Avg Lead Increase</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PROBLEM -->
+    <section class="section">
+        <div class="container">
+            <p class="section-badge">The Problem</p>
+            <h2 class="section-title">Your Business Is Losing Leads While You Sleep</h2>
+            <div class="pain-grid">
+                <div class="pain-card">
+                    <div class="emoji">😴</div>
+                    <h4>Missed Inquiries</h4>
+                    <p>Leads message you at 2 AM. Nobody responds. They move to a competitor by morning.</p>
+                </div>
+                <div class="pain-card">
+                    <div class="emoji">🔄</div>
+                    <h4>Manual Repetition</h4>
+                    <p>Answering the same questions 50 times a day. Wasting hours on tasks a bot could handle.</p>
+                </div>
+                <div class="pain-card">
+                    <div class="emoji">💸</div>
+                    <h4>Follow-up Failure</h4>
+                    <p>80% of leads need 5+ follow-ups. Your team stops at 2. Revenue evaporates.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- OFFER -->
+    <section class="section" id="offer">
+        <div class="container">
+            <div class="offer-box">
+                <div class="offer-content">
+                    <p class="section-badge">The Solution</p>
+                    <div class="offer-header">
+                        <h3>AI Growth Stack</h3>
+                        <div class="price-block">
+                            <div class="price-old">$4,500</div>
+                            <div class="price-new">$2,497</div>
+                            <div class="price-note">One-time setup + $497/mo</div>
+                        </div>
+                    </div>
+                    <p style="color: var(--text-dim); margin-bottom: 1.5rem; max-width: 550px;">
+                        Complete AI automation package. Chatbot, email flows, and lead qualification — 
+                        all working together seamlessly.
+                    </p>
+                    <div class="feature-grid">
+                        <div class="feature-item">
+                            <span class="feature-check">✓</span> Custom AI Chatbot (website + social)
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-check">✓</span> 24/7 Lead Qualification Engine
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-check">✓</span> Automated Email Follow-up Flows
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-check">✓</span> CRM Integration (HubSpot, Salesforce)
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-check">✓</span> Appointment Booking Automation
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-check">✓</span> Monthly Performance Dashboard
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-check">✓</span> AI Training on Your Business Data
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-check">✓</span> Priority Support & Updates
+                        </div>
+                    </div>
+                    <a href="#" class="btn btn-primary" style="font-size: 1.1rem;">
+                        Book Your Strategy Call →
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PROCESS -->
+    <section class="section" id="how">
+        <div class="container">
+            <p class="section-badge">Process</p>
+            <h2 class="section-title">From Zero to AI-Powered in 5 Days</h2>
+            <div class="process-cards">
+                <div class="process-card">
+                    <div class="process-num">1</div>
+                    <h4>Strategy Call</h4>
+                    <p>We map your customer journey and identify automation opportunities.</p>
+                </div>
+                <div class="process-card">
+                    <div class="process-num">2</div>
+                    <h4>AI Training</h4>
+                    <p>We feed your business data into the AI. FAQs, products, processes.</p>
+                </div>
+                <div class="process-card">
+                    <div class="process-num">3</div>
+                    <h4>Build & Test</h4>
+                    <p>We deploy your AI systems and test everything thoroughly.</p>
+                </div>
+                <div class="process-card">
+                    <div class="process-num">4</div>
+                    <h4>Go Live</h4>
+                    <p>Your AI goes live. Leads get responded to instantly. Revenue grows.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ROI -->
+    <section class="container">
+        <div class="roi-box">
+            <h4>📊 What This Means For Your Business</h4>
+            <p style="color: var(--text-dim); font-size: 0.9rem;">Based on average client results</p>
+            <div class="roi-numbers">
+                <div class="roi-item">
+                    <div class="roi-value">40%</div>
+                    <div class="roi-label">More Leads Captured</div>
+                </div>
+                <div class="roi-item">
+                    <div class="roi-value">30hrs</div>
+                    <div class="roi-label">Saved Per Week</div>
+                </div>
+                <div class="roi-item">
+                    <div class="roi-value">3.2x</div>
+                    <div class="roi-label">Average ROI</div>
+                </div>
+                <div class="roi-item">
+                    <div class="roi-value">&lt;5min</div>
+                    <div class="roi-label">Avg Response Time</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="section">
+        <div class="container">
+            <p class="section-badge">FAQ</p>
+            <h2 class="section-title">You Probably Have Questions</h2>
+            <div class="faq-grid">
+                <div class="faq-card">
+                    <h4>Do I need technical knowledge?</h4>
+                    <p>Zero. We handle everything. You just tell us about your business and we build the AI.</p>
+                </div>
+                <div class="faq-card">
+                    <h4>What platforms does it work with?</h4>
+                    <p>Website, Facebook Messenger, Instagram DM, WhatsApp, Email — wherever your customers are.</p>
+                </div>
+                <div class="faq-card">
+                    <h4>How quickly can I see results?</h4>
+                    <p>Most clients see improved lead response within the first week. ROI typically within 30 days.</p>
+                </div>
+                <div class="faq-card">
+                    <h4>What if the AI makes mistakes?</h4>
+                    <p>We train it on your specific business. Plus, human handoff is built in for complex situations.</p>
+                </div>
+                <div class="faq-card">
+                    <h4>Can you work with my existing tools?</h4>
+                    <p>Yes. We integrate with HubSpot, Salesforce, Gmail, Slack, and 50+ other platforms.</p>
+                </div>
+                <div class="faq-card">
+                    <h4>Is there a money-back guarantee?</h4>
+                    <p>If you're not satisfied within 14 days of going live, we'll refund your setup fee. Full stop.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FINAL CTA -->
+    <section class="cta-final">
+        <div class="container">
+            <h2>Ready to Automate Your Growth?</h2>
+            <p>
+                While you're reading this, your competitors' AI is capturing leads. 
+                Let's get yours running.
+            </p>
+            <a href="#" class="btn btn-primary" style="font-size: 1.2rem; padding: 1.3rem 3rem;">
+                Book Your Free Strategy Call →
+            </a>
+            <div class="urgency-badge">
+                ⚡ Only 2 Implementation Slots Remaining
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 NeuralOps. AI Automation Agency.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) target.scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.pain-card, .process-card, .faq-card').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(20px)';
+            el.style.transition = 'all 0.6s ease';
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>
