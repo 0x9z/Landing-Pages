@@ -11,10 +11,10 @@ No frameworks. Single-file. Fully responsive.
 
 | # | Page | Style | Preview |
 |---|------|-------|---------|
-| 01 | AetherMedia | SMMA Agency | [AetherMedia Demo](https://zero.ma/Landing-Pages/aethermedia/) |
-| 02 | Studio Elevate | Performance Marketing | [Studio Elevate Demo](https://zero.ma/Landing-Pages/studio-elevate/) |
-| 03 | NeuralOps | AI Automation Agency | [Neuralops Demo](https://zero.ma/Landing-Pages/neuralops/) |
-| 04 | GrowthLab | Landing Page Service | [Growthlab Demo](https://zero.ma/Landing-Pages/growthlab/) |
+| 01 | AetherMedia | SMMA Agency | [AetherMedia Demo](https://0x9z.github.io/landing-pages/aethermedia/) |
+| 02 | Studio Elevate | Performance Marketing | [Studio Elevate Demo](https://0x9z.github.io/landing-pages/studio-elevate/) |
+| 03 | NeuralOps | AI Automation Agency | [NeuralOps Demo](https://0x9z.github.io/landing-pages/neuralops/) |
+| 04 | GrowthLab | Landing Page Service | [GrowthLab Demo](https://0x9z.github.io/landing-pages/growthlab/) |
 
 ---
 
@@ -61,7 +61,7 @@ landing-pages/
    git clone https://github.com/0x9z/landing-pages.git
    ```
 2. Open any folder's `index.html` in a browser
-3. Or deploy to GitHub Pages, Netlify, or Vercel
+3. Or visit the live demos above
 
 ---
 
